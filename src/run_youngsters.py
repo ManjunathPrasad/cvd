@@ -28,7 +28,7 @@ from catboost import CatBoostClassifier
 from interpret.glassbox import ExplainableBoostingClassifier
 from lightgbm import LGBMClassifier
 from scipy import stats
-from sklearn.base import clone
+from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.compose import ColumnTransformer
 from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import RandomForestClassifier, StackingClassifier
@@ -84,6 +84,28 @@ def load_data(path: Path = DATA) -> tuple[pd.DataFrame, np.ndarray, list[str], l
 
 
 # --------------------------------------------------------------------------- models
+class CatBoostWrapper(ClassifierMixin, BaseEstimator):
+    """Thin scikit-learn wrapper so CatBoost can be cloned inside StackingClassifier."""
+
+    def __init__(self, cat_features: tuple = (), params: dict | None = None):
+        self.cat_features = cat_features
+        self.params = params
+
+    def fit(self, X, y):
+        self.model_ = CatBoostClassifier(cat_features=list(self.cat_features), auto_class_weights="Balanced",
+                                         random_seed=SEED, thread_count=N_JOBS, verbose=0,
+                                         allow_writing_files=False, **(self.params or {}))
+        self.model_.fit(X, y)
+        self.classes_ = self.model_.classes_
+        return self
+
+    def predict_proba(self, X):
+        return self.model_.predict_proba(X)
+
+    def predict(self, X):
+        return self.classes_[np.argmax(self.predict_proba(X), axis=1)]
+
+
 def pos_weight(y: np.ndarray) -> float:
     return float((y == 0).sum() / max((y == 1).sum(), 1))
 
@@ -112,8 +134,7 @@ def make_model(name: str, params: dict, y_train: np.ndarray, cat_cols: list[str]
         clf = LGBMClassifier(class_weight="balanced", random_state=SEED, n_jobs=N_JOBS, verbose=-1, **params)
         return Pipeline([("pre", ordinal), ("clf", clf)])
     if name == "CatBoost":
-        return CatBoostClassifier(cat_features=cat_cols, auto_class_weights="Balanced", random_seed=SEED,
-                                  thread_count=N_JOBS, verbose=0, allow_writing_files=False, **params)
+        return CatBoostWrapper(cat_features=tuple(cat_cols), params=dict(params))
     if name == "EBM":
         return ExplainableBoostingClassifier(random_state=SEED, n_jobs=N_JOBS, outer_bags=4, **params)
     if name == "Dummy(prior)":
