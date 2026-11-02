@@ -1,0 +1,12 @@
+pandas
+numpy
+scipy
+scikit-learn
+xgboost
+lightgbm
+catboost
+optuna
+interpret-core
+matplotlib
+pyyaml
+pytest
