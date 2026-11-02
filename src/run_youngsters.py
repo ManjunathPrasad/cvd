@@ -115,7 +115,7 @@ def make_model(name: str, params: dict, y_train: np.ndarray, cat_cols: list[str]
         return CatBoostClassifier(cat_features=cat_cols, auto_class_weights="Balanced", random_seed=SEED,
                                   thread_count=N_JOBS, verbose=0, allow_writing_files=False, **params)
     if name == "EBM":
-        return ExplainableBoostingClassifier(random_state=SEED, n_jobs=N_JOBS, **params)
+        return ExplainableBoostingClassifier(random_state=SEED, n_jobs=N_JOBS, outer_bags=4, **params)
     if name == "Dummy(prior)":
         return DummyClassifier(strategy="prior")
     raise KeyError(name)

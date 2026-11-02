@@ -1,0 +1,78 @@
+{
+  "final": {
+    "Dummy(prior)": {},
+    "LogisticRegression": {
+      "C": 0.03148911647956861
+    },
+    "RandomForest": {
+      "n_estimators": 200,
+      "max_depth": 16,
+      "min_samples_leaf": 15,
+      "max_features": 0.6789267873576292
+    },
+    "XGBoost": {
+      "n_estimators": 550,
+      "learning_rate": 0.07725378389307355,
+      "max_depth": 6,
+      "min_child_weight": 1.0636066512540283,
+      "subsample": 0.9849549260809971,
+      "colsample_bytree": 0.899465584480253,
+      "reg_lambda": 0.0070689749506246055
+    },
+    "LightGBM": {
+      "n_estimators": 550,
+      "learning_rate": 0.07725378389307355,
+      "num_leaves": 28,
+      "min_child_samples": 5,
+      "subsample": 0.9849549260809971,
+      "subsample_freq": 1,
+      "colsample_bytree": 0.899465584480253,
+      "reg_lambda": 0.0070689749506246055
+    },
+    "CatBoost": {
+      "iterations": 300,
+      "learning_rate": 0.262516606324193,
+      "depth": 7,
+      "l2_leaf_reg": 3.968793330444372
+    },
+    "EBM": {}
+  },
+  "top3": [
+    "XGBoost",
+    "LightGBM",
+    "RandomForest"
+  ],
+  "thresholds_youden": {
+    "Dummy(prior)": 0.5,
+    "LogisticRegression": 0.6086156869698682,
+    "RandomForest": 0.435691913246964,
+    "XGBoost": 0.09020927548408508,
+    "LightGBM": 0.3564030461890156,
+    "CatBoost": 0.6524373663755207,
+    "EBM": 0.21230135387590765,
+    "SoftVoting(top3)": 0.21466670396989862,
+    "Stacking(top3)": 0.19590303649886756
+  },
+  "thresholds_sens90": {
+    "Dummy(prior)": 0.5,
+    "LogisticRegression": 0.41728788393978533,
+    "RandomForest": 0.35684974317428086,
+    "XGBoost": 0.014942529611289501,
+    "LightGBM": 0.02075087510753907,
+    "CatBoost": 0.01214446331293521,
+    "EBM": 0.15531200119474084,
+    "SoftVoting(top3)": 0.1446360314822627,
+    "Stacking(top3)": 0.1839217773444004
+  },
+  "trials": {
+    "LogisticRegression": 2,
+    "RandomForest": 2,
+    "XGBoost": 2,
+    "LightGBM": 2,
+    "CatBoost": 2,
+    "EBM": 0,
+    "Dummy(prior)": 0
+  },
+  "outer_k": 2,
+  "inner_k": 2
+}

@@ -117,10 +117,11 @@ def fig_metric_bars(test):
         ax.barh(yy, t[k], height=0.6, color=SERIES[0], edgecolor=SURFACE, linewidth=2)
         if has_ci:
             ax.errorbar(t[k], yy, xerr=[t[k] - t[f"{k}_lo"], t[f"{k}_hi"] - t[k]], fmt="none", ecolor=INK, elinewidth=1)
-        for i, v in enumerate(t[k]):
-            ax.text(max(v, 0) + 0.01, i, f"{v:.2f}", va="center", fontsize=7.5, color=INK)
+        right = t[f"{k}_hi"] if has_ci else t[k]
+        for i, (v, r) in enumerate(zip(t[k], right)):
+            ax.text(max(r, 0) + 0.02, i, f"{v:.2f}", va="center", fontsize=7.5, color=INK)
         ax.set_title(k.upper() if k in ("f1", "mcc") else k.capitalize())
-        ax.set_xlim(min(0, t[k].min() - 0.05), 1.05)
+        ax.set_xlim(min(0, t[k].min() - 0.05), 1.15)
         ax.grid(axis="y", visible=False)
     axes[0].set_yticks(yy, t.index)
     fig.suptitle("Figure 5. Threshold metrics on the test set (Youden threshold from dev)", x=0.01, ha="left")
