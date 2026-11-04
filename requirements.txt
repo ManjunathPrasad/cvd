@@ -2,11 +2,19 @@ pandas
 numpy
 scipy
 scikit-learn
+imbalanced-learn
 xgboost
 lightgbm
 catboost
 optuna
-interpret-core
+interpret
+shap
+dice-ml
 matplotlib
+seaborn
+streamlit
+joblib
 pyyaml
 pytest
+# Optional: TabPFN needs PyTorch and gated Hugging Face weights (accept the licence, set HF_TOKEN).
+# tabpfn

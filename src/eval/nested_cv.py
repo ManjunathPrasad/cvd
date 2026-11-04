@@ -3,7 +3,8 @@
 1. Nested CV on dev: outer stratified K-fold; inside each outer-training fold, Optuna tuning with an
    inner stratified K-fold. Threshold = Youden's J on the inner out-of-fold predictions.
 2. Final model: tune on all of dev, refit, predict the test set once.
-3. Ensembles (soft voting, stacking) built from the three best single models by CV ROC-AUC.
+3. Ensembles built from the three best single models by CV ROC-AUC: soft voting (mean probability) and
+   stacking (logistic-regression meta-learner on the base models' inner out-of-fold probabilities).
 """
 from __future__ import annotations
 
@@ -13,13 +14,13 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
-from sklearn.base import clone
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold, cross_val_predict
 
 from src.config import load_config
 from src.eval.metrics import all_metrics, sensitivity_threshold, youden_threshold
 from src.models.tune import tune
-from src.models.zoo import make_model, make_stacking
+from src.models.zoo import StackedModel, make_model
 
 
 @dataclass
@@ -87,16 +88,17 @@ def run_protocol(models: list[str], X_dev: pd.DataFrame, y_dev: np.ndarray, X_te
             pv = np.mean([inner[(n, k)][2] for n in res.top3], axis=0)
             thr_v = youden_threshold(y_dev[tr], np.mean([inner[(n, k)][0] for n in res.top3], axis=0))
             res.cv_rows.append({"model": "SoftVoting", "fold": k, **all_metrics(y_dev[va], pv, thr_v)})
-        def _stack_fold(k, tr, va):
-            st = make_stacking([(n, res.fold_params[n][k]) for n in res.top3], features, y_dev[tr])
-            oof = cross_val_predict(clone(st), Xd.iloc[tr], y_dev[tr], method="predict_proba",
-                                    cv=StratifiedKFold(k_in, shuffle=True, random_state=seed))[:, 1]
-            st.fit(Xd.iloc[tr], y_dev[tr])
-            return k, st.predict_proba(Xd.iloc[va])[:, 1], youden_threshold(y_dev[tr], oof)
-        jobs = 1 if "TabPFN" in res.top3 else n_jobs
-        for k, p, thr in sorted(Parallel(n_jobs=jobs)(delayed(_stack_fold)(k, tr, va)
-                                                     for k, (tr, va) in enumerate(folds))):
-            res.cv_rows.append({"model": "Stacking", "fold": k, **all_metrics(y_dev[folds[k][1]], p, thr)})
+        for k, (tr, va) in enumerate(folds):
+            # Stacking: logistic-regression meta-learner on the inner out-of-fold probabilities of the
+            # top-3 base models (the same scheme as StackingClassifier(cv=inner folds), without refitting).
+            Z_tr = np.column_stack([inner[(n, k)][0] for n in res.top3])
+            Z_va = np.column_stack([inner[(n, k)][2] for n in res.top3])
+            meta = LogisticRegression(max_iter=5000).fit(Z_tr, y_dev[tr])
+            meta_oof = cross_val_predict(LogisticRegression(max_iter=5000), Z_tr, y_dev[tr], method="predict_proba",
+                                         cv=StratifiedKFold(k_in, shuffle=True, random_state=seed))[:, 1]
+            p = meta.predict_proba(Z_va)[:, 1]
+            res.cv_rows.append({"model": "Stacking", "fold": k,
+                                **all_metrics(y_dev[va], p, youden_threshold(y_dev[tr], meta_oof))})
         log(f"  CV ensembles of {res.top3} done")
 
     # ---- final models on all of dev, evaluated once on test
@@ -118,11 +120,13 @@ def run_protocol(models: list[str], X_dev: pd.DataFrame, y_dev: np.ndarray, X_te
     if ensembles and len(res.top3) == 3:
         res.test_probs["SoftVoting"] = np.mean([res.test_probs[n] for n in res.top3], axis=0)
         res.dev_oof["SoftVoting"] = np.mean([res.dev_oof[n] for n in res.top3], axis=0)
-        st = make_stacking([(n, res.final_params[n]) for n in res.top3], features, y_dev)
-        res.dev_oof["Stacking"] = cross_val_predict(clone(st), Xd, y_dev, method="predict_proba",
+        Z_dev = np.column_stack([res.dev_oof[n] for n in res.top3])
+        meta = LogisticRegression(max_iter=5000).fit(Z_dev, y_dev)
+        res.dev_oof["Stacking"] = cross_val_predict(LogisticRegression(max_iter=5000), Z_dev, y_dev,
+                                                    method="predict_proba",
                                                     cv=StratifiedKFold(k_in, shuffle=True, random_state=seed))[:, 1]
-        res.fitted["Stacking"] = st.fit(Xd, y_dev)
-        res.test_probs["Stacking"] = st.predict_proba(Xt)[:, 1]
+        res.fitted["Stacking"] = StackedModel([res.fitted[n] for n in res.top3], meta)
+        res.test_probs["Stacking"] = res.fitted["Stacking"].predict_proba(Xt)[:, 1]
         for e in ("SoftVoting", "Stacking"):
             res.thresholds[e] = youden_threshold(y_dev, res.dev_oof[e])
             res.sens90[e] = sensitivity_threshold(y_dev, res.dev_oof[e], sens_target)

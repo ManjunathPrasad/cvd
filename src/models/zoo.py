@@ -115,3 +115,14 @@ def make_stacking(base: list[tuple[str, dict]], features: list[str], y_train: np
     ests = [(n, make_model(n, p, features, y_train)) for n, p in base]
     return StackingClassifier(ests, final_estimator=LogisticRegression(max_iter=5000), stack_method="predict_proba",
                               cv=StratifiedKFold(5, shuffle=True, random_state=SEED))
+
+
+class StackedModel:
+    """Fitted stacking ensemble: base pipelines + logistic-regression meta-learner on their probabilities."""
+
+    def __init__(self, bases: list, meta: LogisticRegression):
+        self.bases, self.meta = bases, meta
+
+    def predict_proba(self, X):
+        Z = np.column_stack([b.predict_proba(X)[:, 1] for b in self.bases])
+        return self.meta.predict_proba(Z)
