@@ -60,6 +60,7 @@ evaluation:
   bootstrap_resamples: 1000
   sensitivity_target: 0.90
   sanity_auc_trigger: 0.98
+  permutation_repeats: 20
 
 e2:
   n_models: 4

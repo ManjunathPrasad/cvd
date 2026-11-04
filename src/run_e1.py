@@ -97,7 +97,8 @@ def run_sanity(res: ProtocolResult, best: str, test: pd.DataFrame, X_dev, y_dev,
     feats = res.features
     params = res.final_params[best]
     nd = sanity.near_duplicates(X_dev[feats], X_test[feats])
-    perm = sanity.permutation_test(best, params, feats, X_dev, y_dev, X_test, y_test, seed=cfg["seed"])
+    perm = sanity.permutation_test(best, params, feats, X_dev, y_dev, X_test, y_test,
+                                   n_repeats=cfg["evaluation"]["permutation_repeats"], seed=cfg["seed"])
     drop = sanity.drop_one(best, params, feats, X_dev, y_dev, X_test, y_test)
     drop.to_csv(path("results") / "sanity_drop_one.csv", index=False)
     raw = X_dev.assign(target=y_dev)
