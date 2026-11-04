@@ -1,0 +1,135 @@
+{
+  "models": [
+    "CatBoost",
+    "LightGBM",
+    "RandomForest",
+    "EBM"
+  ],
+  "dca_model": "CatBoost",
+  "best_T2": "CatBoost",
+  "final_params": {
+    "T1": {
+      "CatBoost": {
+        "iterations": 500,
+        "learning_rate": 0.022399960183689213,
+        "depth": 6,
+        "l2_leaf_reg": 1.2590009746752828
+      },
+      "LightGBM": {
+        "n_estimators": 200,
+        "learning_rate": 0.026351023002380795,
+        "num_leaves": 21,
+        "min_child_samples": 6,
+        "subsample": 0.7441543916787533,
+        "colsample_bytree": 0.9733681037886054,
+        "reg_lambda": 0.007115819771738723
+      },
+      "RandomForest": {
+        "n_estimators": 100,
+        "max_depth": 8,
+        "min_samples_leaf": 1,
+        "max_features": 0.9136845264778736
+      },
+      "EBM": {}
+    },
+    "T2": {
+      "CatBoost": {
+        "iterations": 200,
+        "learning_rate": 0.15663347541777514,
+        "depth": 6,
+        "l2_leaf_reg": 5.058694260492327
+      },
+      "LightGBM": {
+        "n_estimators": 600,
+        "learning_rate": 0.047066207812553634,
+        "num_leaves": 17,
+        "min_child_samples": 6,
+        "subsample": 0.9314502523254928,
+        "colsample_bytree": 0.8748207608834562,
+        "reg_lambda": 0.006608273204999698
+      },
+      "RandomForest": {
+        "n_estimators": 500,
+        "max_depth": 11,
+        "min_samples_leaf": 1,
+        "max_features": 0.9568713841014639
+      },
+      "EBM": {}
+    },
+    "T3": {
+      "CatBoost": {
+        "iterations": 200,
+        "learning_rate": 0.10524818442323368,
+        "depth": 7,
+        "l2_leaf_reg": 1.268199141111025
+      },
+      "LightGBM": {
+        "n_estimators": 300,
+        "learning_rate": 0.034543141398465683,
+        "num_leaves": 30,
+        "min_child_samples": 11,
+        "subsample": 0.9976385368685016,
+        "colsample_bytree": 0.423769444849476,
+        "reg_lambda": 0.01675627716194131
+      },
+      "RandomForest": {
+        "n_estimators": 500,
+        "max_depth": 14,
+        "min_samples_leaf": 1,
+        "max_features": 0.3804052313439843
+      },
+      "EBM": {}
+    },
+    "T4": {
+      "RandomForest": {
+        "n_estimators": 300,
+        "max_depth": 13,
+        "min_samples_leaf": 1,
+        "max_features": 0.2222663783265937
+      },
+      "LightGBM": {
+        "n_estimators": 550,
+        "learning_rate": 0.07065113413491496,
+        "num_leaves": 9,
+        "min_child_samples": 17,
+        "subsample": 0.7331508059094167,
+        "colsample_bytree": 0.5317905226722756,
+        "reg_lambda": 0.01476255530372321
+      },
+      "CatBoost": {
+        "iterations": 400,
+        "learning_rate": 0.022680881003614695,
+        "depth": 6,
+        "l2_leaf_reg": 1.4808945119975185
+      },
+      "EBM": {}
+    }
+  },
+  "thresholds": {
+    "T1": {
+      "CatBoost": 0.5500147691110481,
+      "LightGBM": 0.762942751352085,
+      "RandomForest": 0.5863142121881972,
+      "EBM": 0.7129013681002538
+    },
+    "T2": {
+      "CatBoost": 0.7336081029395053,
+      "LightGBM": 0.9319260303114815,
+      "RandomForest": 0.6776970917970917,
+      "EBM": 0.5250998633693964
+    },
+    "T3": {
+      "CatBoost": 0.8146073518225692,
+      "LightGBM": 0.632067410259144,
+      "RandomForest": 0.548,
+      "EBM": 0.22171254938522308
+    },
+    "T4": {
+      "RandomForest": 0.6366666666666667,
+      "LightGBM": 0.49875630813663563,
+      "CatBoost": 0.6136605308018089,
+      "EBM": 0.37308320009768725
+    }
+  },
+  "runtime_min": 44.26889810562134
+}
