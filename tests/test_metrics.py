@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.metrics import roc_auc_score
 
-from src.metrics import all_metrics, calibration_intercept_slope, paired_bootstrap_auc, youden_threshold
+from src.eval.metrics import all_metrics, calibration_intercept_slope, paired_bootstrap_auc, youden_threshold
 
 
 def test_perfect_calibration_gives_zero_intercept_unit_slope():

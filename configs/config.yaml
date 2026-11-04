@@ -1,0 +1,89 @@
+# Central configuration. Every script reads this file; change values here, not in code.
+seed: 42
+
+paths:
+  raw: data/raw/mendeley_india.csv
+  external_dir: data/external
+  results: results
+  figures: results/figures
+  models: models
+  reports: reports
+
+# PLAN.md Section 2.1
+columns:
+  id: patientid
+  target: target
+  numeric: [age, restingBP, serumcholestrol, maxheartrate, oldpeak]
+  binary: [gender, fastingbloodsugar, exerciseangia]
+  categorical: [chestpain, restingrelectro, slope]   # one-hot for logistic regression; cat_features for CatBoost
+  ordinal: [noofmajorvessels]
+
+allowed_codes:
+  gender: [0, 1]
+  chestpain: [0, 1, 2, 3]
+  fastingbloodsugar: [0, 1]
+  restingrelectro: [0, 1, 2]
+  exerciseangia: [0, 1]
+  slope: [1, 2, 3]            # documented coding; 0 is reported by the audit and kept as its own category
+  noofmajorvessels: [0, 1, 2, 3]
+  target: [0, 1]
+
+impossible_zero: [serumcholestrol, restingBP]   # 0 -> missing
+
+# PLAN.md Section 5, E2 (cumulative)
+tiers:
+  T1: [age, gender, chestpain, restingBP]
+  T2: [age, gender, chestpain, restingBP, serumcholestrol, fastingbloodsugar, restingrelectro]
+  T3: [age, gender, chestpain, restingBP, serumcholestrol, fastingbloodsugar, restingrelectro,
+       maxheartrate, exerciseangia, oldpeak, slope]
+  T4: [age, gender, chestpain, restingBP, serumcholestrol, fastingbloodsugar, restingrelectro,
+       maxheartrate, exerciseangia, oldpeak, slope, noofmajorvessels]
+
+split:
+  test_size: 0.20
+
+cv:
+  outer_folds: 5
+  inner_folds: 5
+  n_jobs: 4            # outer folds run in parallel
+
+tuning:
+  n_trials: 40         # Optuna trials per model per tuning run (PLAN.md Section 3)
+  n_trials_override: {}   # e.g. {CatBoost: 20} if a model is too slow on a laptop
+
+imbalance:
+  min_minority_fraction: 0.40   # below this, class weights are used
+
+models: [LogisticRegression, RandomForest, XGBoost, LightGBM, CatBoost, TabPFN, EBM]
+
+evaluation:
+  bootstrap_resamples: 1000
+  sensitivity_target: 0.90
+  sanity_auc_trigger: 0.98
+
+e2:
+  n_models: 4
+  dca_thresholds: [0.05, 0.50]
+  dca_prespecified: 0.20
+  counterfactual_features: [restingBP, serumcholestrol, fastingbloodsugar]
+  n_counterfactual_patients: 3
+
+e3:
+  uci_files:
+    Cleveland: processed.cleveland.data
+    Hungary: processed.hungarian.data
+    Switzerland: processed.switzerland.data
+    VA: processed.va.data
+  uci_columns: [age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal, num]
+  shared_features: [age, gender, chestpain, restingBP, serumcholestrol, fastingbloodsugar, restingrelectro,
+                    maxheartrate, exerciseangia, oldpeak, slope]
+  # Must be agreed with the guide before E3 runs (PLAN.md Section 2.1): how the Indian slope codes
+  # map onto UCI slope 1-3, and what to do with Indian slope == 0. Leave null until decided.
+  indian_slope_mapping: null     # e.g. {0: null, 1: 1, 2: 2, 3: 3}
+  adaptation_fractions: [0.10, 0.20]
+  adaptation_repeats: 20
+  age_bands: [45, 60]
+  n_models: 2
+
+demo:
+  risk_bands: {low: 0.30, high: 0.60}

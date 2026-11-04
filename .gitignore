@@ -3,6 +3,12 @@ __pycache__/
 *.pyc
 .pytest_cache/
 catboost_info/
+# raw data is downloaded manually (PLAN.md Section 2)
 data/raw/*.csv
 data/external/
-models/
+# keep only the two demo models; everything else in models/ is regenerated
+models/*
+!models/demo_T4.joblib
+!models/demo_T2.joblib
+# quick smoke-test outputs
+results/_quick/
