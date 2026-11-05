@@ -80,7 +80,7 @@ e3:
                     maxheartrate, exerciseangia, oldpeak, slope]
   # Must be agreed with the guide before E3 runs (PLAN.md Section 2.1): how the Indian slope codes
   # map onto UCI slope 1-3, and what to do with Indian slope == 0. Leave null until decided.
-  indian_slope_mapping: null     # e.g. {0: null, 1: 1, 2: 2, 3: 3}
+  indian_slope_mapping: {0: null, 1: 1, 2: 2, 3: 3}   # agreed 5 Nov 2026: Indian slope 0 (undocumented) -> missing
   adaptation_fractions: [0.10, 0.20]
   adaptation_repeats: 20
   age_bands: [45, 60]
