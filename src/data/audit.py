@@ -83,9 +83,12 @@ def run_audit() -> dict:
             out.append(f"- `{col} == {v}`: {n} rows. Kept as its own category for RC1 and RC2.")
         if any(c == "slope" for c, _, _ in undocumented):
             s0 = raw[raw.slope == 0][tgt].mean()
-            out.append(f"- Target rate when `slope == 0`: {s0:.1%}. "
-                       "**Decision needed before RC3:** how to map Indian slope codes onto UCI slope 1–3 "
-                       "(set `e3.indian_slope_mapping` in configs/config.yaml).")
+            mapping = cfg["e3"].get("indian_slope_mapping")
+            rc3 = (f"RC3 maps Indian slope codes onto UCI slope 1–3 as {mapping} (None = missing; "
+                   "`e3.indian_slope_mapping` in configs/config.yaml)." if mapping is not None else
+                   "**Decision needed before RC3:** how to map Indian slope codes onto UCI slope 1–3 "
+                   "(set `e3.indian_slope_mapping` in configs/config.yaml).")
+            out.append(f"- Target rate when `slope == 0`: {s0:.1%}. {rc3}")
     else:
         out.append("- None.")
     out.append("")

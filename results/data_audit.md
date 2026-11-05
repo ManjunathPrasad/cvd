@@ -120,7 +120,7 @@ Minority class = 42.0%. Rule (PLAN.md Section 3): class weights only if below 40
 ## Codes outside the documented coding
 
 - `slope == 0`: 180 rows. Kept as its own category for RC1 and RC2.
-- Target rate when `slope == 0`: 0.0%. **Decision needed before RC3:** how to map Indian slope codes onto UCI slope 1–3 (set `e3.indian_slope_mapping` in configs/config.yaml).
+- Target rate when `slope == 0`: 0.0%. RC3 maps Indian slope codes onto UCI slope 1–3 as {0: None, 1: 1, 2: 2, 3: 3} (None = missing; `e3.indian_slope_mapping` in configs/config.yaml).
 
 ## Figures
 

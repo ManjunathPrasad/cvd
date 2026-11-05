@@ -45,6 +45,21 @@ def main() -> None:
                   f"- Decision curves (Figure 5) use {e2['dca_model']}; counterfactuals use the best T2 model, "
                   f"{e2['best_T2']} (`results/counterfactual_examples.md`).", ""]
 
+    if (res / "table6_transfer.csv").exists():
+        t6 = pd.read_csv(res / "table6_transfer.csv")
+        t6 = t6[~t6.direction.str.startswith("LOCO: rest → India")]  # identical to "Pooled UCI → India"
+        show = t6[["direction", "model", "n_target", "internal_auc", "external_auc", "external_brier",
+                   "external_cal_slope"]].round(3)
+        lines += ["## RC3 — transfer to the UCI cohorts (Table 6)", "", to_markdown(show), ""]
+        runs = res / "e3_adaptation_runs.csv"
+        if runs.exists():
+            a = pd.read_csv(runs)
+            g = a.groupby(["direction", "model", "fraction", "method"])["auc"].mean().unstack("method").round(3)
+            lines += ["Adaptation with a fraction of the target cohort (mean ROC-AUC over repeats, evaluated on the "
+                      "rest of the target cohort):", "", to_markdown(g.reset_index()), ""]
+        lines += ["- Fairness by sex and age band: `results/e3_fairness.csv`. "
+                  "Harmonisation rules: `results/harmonisation_table.md`.", ""]
+
     if (res / "tabpfn_status.md").exists():
         lines += ["## Notes", "", *[l for l in (res / "tabpfn_status.md").read_text().splitlines()[2:] if l], ""]
     (path("reports") / "presentation_results.md").write_text("\n".join(lines) + "\n")
