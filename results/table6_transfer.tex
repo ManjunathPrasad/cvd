@@ -1,0 +1,34 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Cross-population transfer: internal vs external performance.}
+\label{tab:transfer}
+\begin{tabular}{lcccccc}
+\toprule
+Direction & Model & Internal AUC & External AUC & ΔAUC & Cal. slope & Brier \\
+\midrule
+India → Cleveland & CatBoost & 0.997 & 0.62 & -0.377 & 0.09 & 0.389 \\
+India → Hungary & CatBoost & 0.997 & 0.677 & -0.32 & 0.15 & 0.303 \\
+India → Switzerland & CatBoost & 0.997 & 0.366 & -0.631 & -0.15 & 0.333 \\
+India → VA & CatBoost & 0.997 & 0.545 & -0.451 & 0.04 & 0.275 \\
+Pooled UCI → India & CatBoost & 0.88 & 0.513 & -0.367 & 0.08 & 0.287 \\
+LOCO: rest → India & CatBoost & 0.88 & 0.513 & -0.367 & 0.08 & 0.287 \\
+LOCO: rest → Cleveland & CatBoost & 0.958 & 0.791 & -0.167 & 0.51 & 0.222 \\
+LOCO: rest → Hungary & CatBoost & 0.943 & 0.851 & -0.093 & 0.88 & 0.161 \\
+LOCO: rest → Switzerland & CatBoost & 0.943 & 0.616 & -0.326 & 0.28 & 0.2 \\
+LOCO: rest → VA & CatBoost & 0.954 & 0.694 & -0.261 & 0.4 & 0.179 \\
+India → Cleveland (12 attributes) & CatBoost & 0.998 & 0.68 & -0.318 & 0.15 & 0.324 \\
+India → Cleveland & LightGBM & 0.997 & 0.687 & -0.31 & 0.13 & 0.377 \\
+India → Hungary & LightGBM & 0.997 & 0.71 & -0.287 & 0.17 & 0.317 \\
+India → Switzerland & LightGBM & 0.997 & 0.391 & -0.606 & -0.13 & 0.255 \\
+India → VA & LightGBM & 0.997 & 0.585 & -0.412 & 0.05 & 0.28 \\
+Pooled UCI → India & LightGBM & 0.881 & 0.557 & -0.323 & 0.27 & 0.26 \\
+LOCO: rest → India & LightGBM & 0.881 & 0.557 & -0.323 & 0.27 & 0.26 \\
+LOCO: rest → Cleveland & LightGBM & 0.957 & 0.81 & -0.147 & 0.73 & 0.19 \\
+LOCO: rest → Hungary & LightGBM & 0.947 & 0.838 & -0.109 & 1.04 & 0.164 \\
+LOCO: rest → Switzerland & LightGBM & 0.946 & 0.625 & -0.321 & 0.33 & 0.205 \\
+LOCO: rest → VA & LightGBM & 0.957 & 0.679 & -0.278 & 0.37 & 0.185 \\
+India → Cleveland (12 attributes) & LightGBM & 0.998 & 0.74 & -0.258 & 0.14 & 0.362 \\
+\bottomrule
+\end{tabular}
+\end{table}
